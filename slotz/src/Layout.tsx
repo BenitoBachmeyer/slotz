@@ -1,22 +1,44 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import "./SidebarLayout.css";
 
 export default function Layout() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const closeSidebar = () => setSidebarOpen(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") closeSidebar();
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     return (
         <div className="layout">
-            <aside className="sidebar">
+            <button
+                className="hamburger"
+                aria-label={sidebarOpen ? "Close navigation" : "Open navigation"}
+                aria-expanded={sidebarOpen}
+                onClick={() => setSidebarOpen((open) => !open)}
+            >
+                {sidebarOpen ? "✕" : "☰"}
+            </button>
+
+            <aside className={`sidebar${sidebarOpen ? " sidebar-open" : ""}`}>
                 <h1 className="sidebar-title">Slot Lounge</h1>
 
                 <nav className="sidebar-nav">
-                    <NavLink to="/" end>Home</NavLink>
-                    <NavLink to="/slot">Slot</NavLink>
-                    <NavLink to="/paytable">Paytable</NavLink>
-                    <NavLink to="/symbols">Symbols</NavLink>
-                    <NavLink to="/history">History</NavLink>
-                    <NavLink to="/stats">Stats</NavLink>
-                    <NavLink to="/challenges">Challenges</NavLink>
-                    <NavLink to="/leaderboard">Leaderboard</NavLink>
-                    <NavLink to="/admin">Admin</NavLink>
+                    <NavLink to="/" end onClick={closeSidebar}>Home</NavLink>
+                    <NavLink to="/slot" onClick={closeSidebar}>Slot</NavLink>
+                    <NavLink to="/paytable" onClick={closeSidebar}>Paytable</NavLink>
+                    <NavLink to="/symbols" onClick={closeSidebar}>Symbols</NavLink>
+                    <NavLink to="/history" onClick={closeSidebar}>History</NavLink>
+                    <NavLink to="/stats" onClick={closeSidebar}>Stats</NavLink>
+                    <NavLink to="/challenges" onClick={closeSidebar}>Challenges</NavLink>
+                    <NavLink to="/leaderboard" onClick={closeSidebar}>Leaderboard</NavLink>
+                    <NavLink to="/admin" onClick={closeSidebar}>Admin</NavLink>
                 </nav>
             </aside>
 
