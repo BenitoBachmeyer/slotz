@@ -1,0 +1,51 @@
+.layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    width: 100%;
+    background: #021133;
+    color: #f3f4f6;
+    font-family: monospace;
+}
+
+.sidebar {
+    background: #1a2538;
+    padding: 2rem 1.5rem;
+    border-right: 1px solid #2c3a52;
+    min-height: 100vh;
+}
+
+.sidebar-title {
+    margin: 0 0 2rem 0;
+    font-size: 2rem;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    color: #d1d5db;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    background: #2a3954;
+}
+
+.sidebar-nav a.active {
+    background: #2f66e0;
+    color: white;
+}
+
+.content {
+    padding: 3rem;
+    min-width: 0;
+}
