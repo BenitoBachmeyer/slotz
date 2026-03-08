@@ -9,6 +9,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-bg: #283845;
+  --color-surface: #344a5a;
+  --color-primary: #129490;
+  --color-text: #d5fff3;
+  --color-accent-warm: #fad4c0;
+  --color-accent-soft: #a1869e;
+
+  --radius: 12px;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
 }
 
 * {
