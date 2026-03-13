@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router";
 import "./SidebarLayout.css";
 
 export default function Layout() {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     const closeSidebar = () => setSidebarOpen(false);
 
@@ -16,14 +16,15 @@ export default function Layout() {
     }, []);
 
     return (
-        <div className="layout">
+        <div className={`layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
             <button
-                className="hamburger"
+                className="sidebar-toggle"
                 aria-label={sidebarOpen ? "Close navigation" : "Open navigation"}
                 aria-expanded={sidebarOpen}
                 onClick={() => setSidebarOpen((open) => !open)}
             >
-                {sidebarOpen ? "✕" : "☰"}
+                <span className="toggle-icon" aria-hidden="true">{sidebarOpen ? "✕" : "☰"}</span>
+                <span className="toggle-label">{sidebarOpen ? "Hide sidebar" : "Show sidebar"}</span>
             </button>
 
             <aside className={`sidebar${sidebarOpen ? " sidebar-open" : ""}`}>
