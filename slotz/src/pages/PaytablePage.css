@@ -1,0 +1,11 @@
+.paytable-card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.paytable-card {
+    flex: 0 0 calc((100% - 4 * 16px) / 4);
+    box-sizing: border-box;
+}
