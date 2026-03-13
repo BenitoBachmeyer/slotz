@@ -5,7 +5,7 @@ import "./SidebarLayout.css";
 export default function Layout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
-    const closeSidebar = () => setSidebarOpen(false);
+    const closeSidebar = () => setSidebarOpen(true);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
