@@ -9,6 +9,8 @@ import cherriesIcon from "../assets/cherries.svg"
 import bellIcon from "../assets/bell.svg"
 import "./PaytablePage.css"
 import {PaytableItem} from "../components/PaytableItem/PaytableItem.tsx";
+import {WinningLinesInfo} from "../components/WinningLinesInfo/WinningLinesInfo.tsx";
+import {WinningRulesInfo} from "../components/WinningRulesInfo/WinningRulesInfo.tsx";
 
 export const PaytablePage = () => {
     return (
@@ -18,6 +20,7 @@ export const PaytablePage = () => {
                 subtitle={"See what Icon generates which prices,"}
             />
 
+            <h2 id={"symbol-payout-header"}>Symbol Payouts</h2>
             <div className={"paytable-card-grid"}>
                 <Card className={"paytable-card"}>
                     <PaytableItem
@@ -97,6 +100,8 @@ export const PaytablePage = () => {
                     />
                 </Card>
             </div>
+            <WinningRulesInfo />
+            <WinningLinesInfo />
         </section>
     )
 }

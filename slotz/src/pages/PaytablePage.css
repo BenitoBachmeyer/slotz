@@ -9,3 +9,9 @@
     flex: 0 0 calc((100% - 4 * 16px) / 4);
     box-sizing: border-box;
 }
+
+#symbol-payout-header {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text);
+    font-size: 1.5rem;
+}
