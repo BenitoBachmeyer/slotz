@@ -43,7 +43,7 @@ const overviewItems = [
 
 const gameConfiguration = [
     {label: "Reels", value: "5"},
-    {label: "Rows", value: "3"},
+    {label: "Rows", value: "4"},
     {label: "Active Paylines", value: "6"},
     {label: "Default Demo Balance", value: "1,000 credits"},
     {label: "Minimum Bet", value: "10 credits"},
