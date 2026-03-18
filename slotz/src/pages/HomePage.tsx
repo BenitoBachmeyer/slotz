@@ -7,8 +7,9 @@ import {Link} from "react-router-dom";
 export const HomePage = () => {
     return (
         <section>
-            <PageHeader title={"Home Page"} subtitle={"This application is a slot machine demo built as a Single-Page-Application using the React Framework.\n" +
-                "                It is supported by a restful API written in Java with the Spring Boot Framework. Users can explore the game, view payouts (non real), track statistics and manage demo settings."} />
+            <PageHeader title={"Home Page"}
+                        subtitle={"This application is a slot machine demo built as a Single-Page-Application using the React Framework.\n" +
+                            "                It is supported by a restful API written in Java with the Spring Boot Framework. Users can explore the game, view payouts (non real), track statistics and manage demo settings."}/>
 
             <div className="home-card-grid">
                 <Card>
@@ -35,10 +36,10 @@ export const HomePage = () => {
                     </Link>
                 </Card>
                 <Card>
-                    <h3>Admin Page</h3>
-                    <p>Adjust your settings.</p>
-                    <Link to={"/admin"}>
-                        <Button>View Admin</Button>
+                    <h3>Settings Overview</h3>
+                    <p>See the new settings design and manage your demo setup.</p>
+                    <Link to={"/settings"}>
+                        <Button>View Settings</Button>
                     </Link>
                 </Card>
             </div>

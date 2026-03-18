@@ -39,7 +39,7 @@ export default function Layout() {
                     <NavLink to="/stats" onClick={closeSidebar}>Stats</NavLink>
                     <NavLink to="/challenges" onClick={closeSidebar}>Challenges</NavLink>
                     <NavLink to="/leaderboard" onClick={closeSidebar}>Leaderboard</NavLink>
-                    <NavLink to="/admin" onClick={closeSidebar}>Admin</NavLink>
+                    <NavLink to="/settings" onClick={closeSidebar}>Settings</NavLink>
                 </nav>
             </aside>
 

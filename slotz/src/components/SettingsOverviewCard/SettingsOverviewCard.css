@@ -1,0 +1,23 @@
+.settings-overview-card {
+    height: 100%;
+}
+
+.settings-overview-card__eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.settings-overview-card__title {
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+    font-size: 1.15rem;
+}
+
+.settings-overview-card__description {
+    margin: 0;
+    color: #d9e4ea;
+}
