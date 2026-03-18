@@ -47,8 +47,6 @@ const symbolFrequency = [
 export const StatsPage = () => {
     return (
         <section>
-            <h2>Stats</h2>
-            <p>This site is still under construction.</p>
             <PageHeader
                 title={"Stats"}
                 subtitle={"Track your slot performance, streaks and payout trends with mock sample data."}
