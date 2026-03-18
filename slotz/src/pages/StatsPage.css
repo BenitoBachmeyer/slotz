@@ -1,0 +1,38 @@
+.stats-metric-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.stats-metric-grid > * {
+    flex: 0 0 calc((100% - 3 * 16px) / 4);
+    box-sizing: border-box;
+}
+
+.stats-breakdown-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.stats-breakdown-grid > * {
+    flex: 1 1 calc((100% - 16px) / 2);
+    min-width: 280px;
+}
+
+@media (max-width: 1080px) {
+    .stats-metric-grid > * {
+        flex: 1 1 calc((100% - 16px) / 2);
+        min-width: 230px;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-metric-grid > *,
+    .stats-breakdown-grid > * {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+}

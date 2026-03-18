@@ -1,0 +1,39 @@
+.settings-action-card {
+    height: 100%;
+}
+
+.settings-action-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+}
+
+.settings-action-card__title {
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+    font-size: 1.35rem;
+}
+
+.settings-action-card__description {
+    margin: 0;
+    color: #d9e4ea;
+}
+
+.settings-action-card__body {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.settings-action-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.settings-action-card__status {
+    margin: 0;
+    color: var(--color-accent-warm);
+}

@@ -8,7 +8,7 @@ import {HistoryPage} from "./pages/HistoryPage.tsx";
 import {StatsPage} from "./pages/StatsPage.tsx";
 import {ChallengePage} from "./pages/ChallengePage.tsx";
 import {LeaderBoardPage} from "./pages/LeaderBoardPage.tsx";
-import {AdminPage} from "./pages/AdminPage.tsx";
+import {SettingsPage} from "./pages/SettingsPage.tsx";
 import {PageNotFoundPage} from "./pages/PageNotFoundPage.tsx";
 
 const router = createBrowserRouter([
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
             { path: "stats", element: <StatsPage /> },
             { path: "challenges", element: <ChallengePage /> },
             { path: "leaderboard", element: <LeaderBoardPage /> },
-            { path: "admin", element: <AdminPage /> },
+            { path: "settings", element: <SettingsPage /> },
             { path: "*", element: <PageNotFoundPage /> },
         ],
     },

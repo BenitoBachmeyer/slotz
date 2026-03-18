@@ -4,7 +4,7 @@
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
-    background: #021133;
+    background-color: var(--color-bg);
     color: #f3f4f6;
     font-family: monospace;
 }

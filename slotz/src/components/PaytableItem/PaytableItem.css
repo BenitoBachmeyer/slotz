@@ -1,0 +1,43 @@
+.icon-paytable {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+}
+
+.paytable-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.paytable-image-box {
+    width: 220px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    padding: 0.5rem;
+}
+
+.paytable-values {
+    border: 1px solid var(--color-accent-soft);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    min-width: 220px;
+    background: rgba(255, 255, 255, 0.03)
+}
+
+.paytable-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0.5rem 0;
+}
+
+.paytable-row:not(:last-child) {
+    border-bottom: 1px solid rgba(220, 184, 203, 0.25)
+}

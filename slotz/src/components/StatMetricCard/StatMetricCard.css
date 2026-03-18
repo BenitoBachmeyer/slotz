@@ -1,0 +1,29 @@
+.stats-metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 180px;
+    justify-content: center;
+}
+
+.stats-metric-label {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-accent-warm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stats-metric-value {
+    margin: 0;
+    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.stats-metric-hint {
+    margin: 0;
+    color: var(--color-text);
+    opacity: 0.85;
+    font-size: 0.95rem;
+}
