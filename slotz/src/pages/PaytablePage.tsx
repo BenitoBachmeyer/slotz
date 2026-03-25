@@ -11,8 +11,22 @@ import "./PaytablePage.css"
 import {PaytableItem} from "../components/PaytableItem/PaytableItem.tsx";
 import {WinningLinesInfo} from "../components/WinningLinesInfo/WinningLinesInfo.tsx";
 import {WinningRulesInfo} from "../components/WinningRulesInfo/WinningRulesInfo.tsx";
+import {useEffect, useState} from "react";
+import type {PaytableResponse} from "../../types/paytable.ts";
+import {fetchPaytable} from "../api/paytableApi.ts";
 
-export const PaytablePage = () => {
+export default function PaytablePage() {
+    const [paytable, setPaytable] = useState<PaytableResponse[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchPaytable()
+            .then(setPaytable)
+            .catch(() => setError("Could not load Paytable."))
+            .finally(() => setLoading(false))
+    }, []);
+
     return (
         <section>
             <PageHeader
