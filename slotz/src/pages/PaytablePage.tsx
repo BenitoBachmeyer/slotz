@@ -12,7 +12,7 @@ import {PaytableItem} from "../components/PaytableItem/PaytableItem.tsx";
 import {WinningLinesInfo} from "../components/WinningLinesInfo/WinningLinesInfo.tsx";
 import {WinningRulesInfo} from "../components/WinningRulesInfo/WinningRulesInfo.tsx";
 import {useEffect, useState} from "react";
-import type {PaytableResponse} from "../../types/paytable.ts";
+import type {PaytableResponse, SymbolKey} from "../../types/paytable.ts";
 import {fetchPaytable} from "../api/paytableApi.ts";
 
 export default function PaytablePage() {
@@ -22,100 +22,55 @@ export default function PaytablePage() {
 
     useEffect(() => {
         fetchPaytable()
-            .then(setPaytable)
-            .catch(() => setError("Could not load Paytable."))
+            .then((data) => {
+                console.log("Paytable data: ", data);
+                setPaytable(data);
+            })
+            .catch((err) => {
+                console.error("Paytable fetch failed: ", err);
+                setError(`Could not load Paytable: ${String(err)}`);
+            })
             .finally(() => setLoading(false))
     }, []);
 
+    const symbolImages: Record<SymbolKey, string> = {
+        lemon: lemonIcon,
+        banana: bananaIcon,
+        grape: grapesIcon,
+        strawberry: strawberryIcon,
+        watermelon: watermelonIcon,
+        cherry: cherriesIcon,
+        bell: bellIcon,
+    };
+
     return (
-        <section>
+        <>
             <PageHeader
                 title={"Pay Table"}
                 subtitle={"See what Icon generates which prices,"}
             />
 
             <h2 id={"symbol-payout-header"}>Symbol Payouts</h2>
-            <div className={"paytable-card-grid"}>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"lemon icon"}
-                        imageSrc={lemonIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 3},
-                            {matchCount: 4, multiplier: 6},
-                            {matchCount: 5, multiplier: 12},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"banana icon"}
-                        imageSrc={bananaIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 3},
-                            {matchCount: 4, multiplier: 6},
-                            {matchCount: 5, multiplier: 12},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"grape icon"}
-                        imageSrc={grapesIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 4},
-                            {matchCount: 4, multiplier: 8},
-                            {matchCount: 5, multiplier: 16},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"strawberry icon"}
-                        imageSrc={strawberryIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 5},
-                            {matchCount: 4, multiplier: 10},
-                            {matchCount: 5, multiplier: 20},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"watermelon icon"}
-                        imageSrc={watermelonIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 6},
-                            {matchCount: 4, multiplier: 12},
-                            {matchCount: 5, multiplier: 24},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"Cherries icon"}
-                        imageSrc={cherriesIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 8},
-                            {matchCount: 4, multiplier: 16},
-                            {matchCount: 5, multiplier: 32},
-                        ]}
-                    />
-                </Card>
-                <Card className={"paytable-card"}>
-                    <PaytableItem
-                        imageAlt={"bell icon"}
-                        imageSrc={bellIcon}
-                        payouts={[
-                            {matchCount: 3, multiplier: 12},
-                            {matchCount: 4, multiplier: 25},
-                            {matchCount: 5, multiplier: 50},
-                        ]}
-                    />
-                </Card>
-            </div>
-            <WinningRulesInfo />
-            <WinningLinesInfo />
-        </section>
+
+            {loading && <p>Loading paytable...</p>}
+            {error && <p>{error}</p>}
+
+            {!loading && !error && (
+                <div className={"paytable-card-grid"}>
+                    {paytable.map((symbol) => (
+                        <Card className={"paytable-card"} key={symbol.id}>
+                            <PaytableItem
+                                imageAlt={`${symbol.name} icon`}
+                                imageSrc={symbolImages[symbol.imageKey]}
+                                payouts={symbol.payouts}
+                            />
+                        </Card>
+                    ))}
+                </div>
+            )}
+
+            <WinningRulesInfo/>
+            <WinningLinesInfo/>
+        </>
     )
 }

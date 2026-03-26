@@ -6,6 +6,15 @@ export interface PayoutDTO {
 export interface PaytableResponse {
     id: string;
     name: string;
-    imageKey: string;
+    imageKey: SymbolKey;
     payouts: PayoutDTO[];
 }
+
+export type SymbolKey =
+    | "lemon"
+    | "banana"
+    | "grape"
+    | "strawberry"
+    | "watermelon"
+    | "cherry"
+    | "bell";
