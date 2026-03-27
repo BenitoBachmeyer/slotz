@@ -72,4 +72,11 @@ public class SpinServiceImpl implements SpinService {
             );
         }
     }
+
+    @Override
+    public List<SpinResponseDTO> getSpinHistory() {
+        return spinHistoryService.getRecentSpins().stream()
+                .map(SpinMapper::toDto)
+                .toList();
+    }
 }

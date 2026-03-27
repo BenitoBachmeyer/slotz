@@ -24,8 +24,8 @@ public class InMemoryGameConfigService implements GameConfigService {
             new Payline(2, "Upper Middle", List.of(1, 1, 1, 1, 1)),
             new Payline(3, "Lower Middle", List.of(2, 2, 2, 2, 2)),
             new Payline(4, "Bottom Row", List.of(3, 3, 3, 3, 3)),
-            new Payline(5, "V Shape", List.of(0, 1, 2, 1, 0)),
-            new Payline(6, "Inverted V", List.of(3, 2, 1, 2, 3))
+            new Payline(5, "Diagonal Up Down", List.of(0, 1, 2, 3, 3)),
+            new Payline(6, "Diagonal Down Up", List.of(3, 2, 1, 0, 0))
     );
 
     private final Map<SlotSymbol, Map<Integer, Integer>> paytable = Map.of(
