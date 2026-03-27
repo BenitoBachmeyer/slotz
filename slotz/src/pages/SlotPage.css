@@ -1,0 +1,78 @@
+.slot-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    color: #f3f6fb;
+}
+
+.slot-page__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.slot-page__header h1 {
+    margin: 0 0 0.45rem 0;
+    font-size: 2.2rem;
+    color: #f5f7fb;
+}
+
+.slot-page__header p {
+    margin: 0;
+    color: #c4cfdb;
+}
+
+.slot-page__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.slot-page__main {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.slot-page__board {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.slot-page__result {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    background: #f2f4f7;
+    color: #243447;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.slot-page__result strong {
+    color: #16212b;
+}
+
+.slot-page__sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.slot-page__error {
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 120, 120, 0.35);
+    background: rgba(120, 24, 24, 0.25);
+    color: #ffd4d4;
+    border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+    .slot-page__main {
+        grid-template-columns: 1fr;
+    }
+}

@@ -13,7 +13,6 @@ import {
 import type {
     SettingsOverviewResponse,
     SlotConfigurationResponse,
-    SpinHistoryEntryDTO,
 } from "../../types/settings";
 import "./SettingsPage.css";
 
@@ -43,7 +42,6 @@ const overviewItems = [
 export const SettingsPage = () => {
     const [overview, setOverview] = useState<SettingsOverviewResponse | null>(null);
     const [configuration, setConfiguration] = useState<SlotConfigurationResponse | null>(null);
-    const [removedEntries, setRemovedEntries] = useState<SpinHistoryEntryDTO[]>([]);
     const [demoBalance, setDemoBalanceInput] = useState("1000");
     const [showConfiguration, setShowConfiguration] = useState(false);
 
@@ -51,13 +49,19 @@ export const SettingsPage = () => {
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const loadData = async () => {
+        const [overviewData, configurationData] = await Promise.all([
+            fetchSettingsOverview(),
+            fetchSettingsConfiguration(),
+        ]);
+
+        setOverview(overviewData);
+        setConfiguration(configurationData);
+        setDemoBalanceInput(String(overviewData.activeDemoBalance));
+    };
+
     useEffect(() => {
-        Promise.all([fetchSettingsOverview(), fetchSettingsConfiguration()])
-            .then(([overviewData, configurationData]) => {
-                setOverview(overviewData);
-                setConfiguration(configurationData);
-                setDemoBalanceInput(String(overviewData.activeDemoBalance));
-            })
+        loadData()
             .catch((err) => {
                 console.error("Settings fetch failed:", err);
                 setError(`Could not load settings: ${String(err)}`);
@@ -67,10 +71,11 @@ export const SettingsPage = () => {
 
     const statsStatus = useMemo(() => {
         if (!overview) return "";
+
         return [
-            `Total Spins: ${overview.statistics.totalSpins}`,
-            `Win Rate: ${Number(overview.statistics.winRate).toFixed(1)}%`,
-            `Best Payout: ${overview.statistics.bestPayout}x`,
+            `Total Spins: ${overview.statistics?.totalSpins ?? 0}`,
+            `Win Rate: ${(overview.statistics?.winRate ?? 0).toFixed(1)}%`,
+            `Best Payout: ${overview.statistics?.bestPayout ?? 0}x`,
         ].join(" · ");
     }, [overview]);
 
@@ -78,27 +83,13 @@ export const SettingsPage = () => {
         ? `${overview.recentHistoryEntryCount} recent entries available`
         : "";
 
-    const reloadOverview = async () => {
-        const freshOverview = await fetchSettingsOverview();
-        setOverview(freshOverview);
-        setDemoBalanceInput(String(freshOverview.activeDemoBalance));
-    };
-
     const handleResetStatistics = async () => {
         try {
             setActionLoading(true);
             setError(null);
 
-            const response = await resetStatistics(); await reloadOverview();
-            setOverview((prev) =>
-                prev
-                    ? {
-                        ...prev,
-                        lastAction: response.message,
-                        statistics: response.statistics,
-                    }
-                    : prev,
-            );
+            await resetStatistics();
+            await loadData();
         } catch (err) {
             console.error(err);
             setError(`Action failed: ${String(err)}`);
@@ -117,18 +108,9 @@ export const SettingsPage = () => {
                 setError("There are no history entries to clear.");
                 return;
             }
-            const response = await clearHistory({ entriesToClear: availableEntries });
 
-            setRemovedEntries(response.removedEntries);
-            setOverview((prev) =>
-                prev
-                    ? {
-                        ...prev,
-                        lastAction: response.message,
-                        recentHistoryEntryCount: response.remainingEntries,
-                    }
-                    : prev,
-            );
+            await clearHistory();
+            await loadData();
         } catch (err) {
             console.error(err);
             setError(`Action failed: ${String(err)}`);
@@ -228,20 +210,7 @@ export const SettingsPage = () => {
                             variant={"secondary"}
                             onAction={handleClearHistory}
                             status={historyStatus}
-                        >
-                            <ul className="settings-page__history-list">
-                                {removedEntries.length > 0 ? (
-                                    removedEntries.map((entry) => (
-                                        <li key={entry.spinId}>
-                                            Spin #{entry.spinId} · {entry.resultLabel} · {entry.creditDelta >= 0 ? "+" : ""}
-                                            {entry.creditDelta} credits
-                                        </li>
-                                    ))
-                                ) : (
-                                    <li>No cleared entries yet.</li>
-                                )}
-                            </ul>
-                        </SettingsActionCard>
+                        />
 
                         <SettingsActionCard
                             title={"Set Demo Balance"}

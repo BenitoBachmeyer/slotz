@@ -15,5 +15,7 @@ export async function fetchStats(): Promise<StatsResponse> {
         throw new Error(`Failed to fetch stats: ${response.status}`);
     }
 
-    return response.json();
+    const data: StatsResponse = await response.json();
+    console.log("fetchStats response:", data);
+    return data;
 }

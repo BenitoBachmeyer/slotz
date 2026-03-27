@@ -1,15 +1,12 @@
 import { API_BASE_URL } from "./client";
 import type {
-    ClearHistoryRequest,
-    ClearHistoryResponse,
     DemoBalanceRequest,
     DemoBalanceResponse,
     SettingsOverviewResponse,
     SlotConfigurationResponse,
-    StatisticsResetResponse,
 } from "../../types/settings";
 
-async function handleResponse<T>(response: Response, errorPrefix: string): Promise<T> {
+async function handleJsonResponse<T>(response: Response, errorPrefix: string): Promise<T> {
     if (!response.ok) {
         const text = await response.text();
         console.error(errorPrefix, response.status, text);
@@ -17,6 +14,14 @@ async function handleResponse<T>(response: Response, errorPrefix: string): Promi
     }
 
     return response.json();
+}
+
+async function handleVoidResponse(response: Response, errorPrefix: string): Promise<void> {
+    if (!response.ok) {
+        const text = await response.text();
+        console.error(errorPrefix, response.status, text);
+        throw new Error(`${errorPrefix}: ${response.status}`);
+    }
 }
 
 export async function fetchSettingsOverview(): Promise<SettingsOverviewResponse> {
@@ -27,7 +32,7 @@ export async function fetchSettingsOverview(): Promise<SettingsOverviewResponse>
         cache: "no-store",
     });
 
-    return handleResponse<SettingsOverviewResponse>(response, "Failed to fetch settings overview");
+    return handleJsonResponse<SettingsOverviewResponse>(response, "Failed to fetch settings overview");
 }
 
 export async function fetchSettingsConfiguration(): Promise<SlotConfigurationResponse> {
@@ -38,31 +43,29 @@ export async function fetchSettingsConfiguration(): Promise<SlotConfigurationRes
         cache: "no-store",
     });
 
-    return handleResponse<SlotConfigurationResponse>(response, "Failed to fetch settings configuration");
+    return handleJsonResponse<SlotConfigurationResponse>(response, "Failed to fetch settings configuration");
 }
 
-export async function resetStatistics(): Promise<StatisticsResetResponse> {
+export async function resetStatistics(): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/settings/statistics/reset`, {
         method: "POST",
         headers: {
-            Accept: "application/json",
+            Accept: "*/*",
         },
     });
 
-    return handleResponse<StatisticsResetResponse>(response, "Failed to reset statistics");
+    return handleVoidResponse(response, "Failed to reset statistics");
 }
 
-export async function clearHistory(body: ClearHistoryRequest): Promise<ClearHistoryResponse> {
+export async function clearHistory(): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/settings/history/clear`, {
         method: "POST",
         headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
+            Accept: "*/*",
         },
-        body: JSON.stringify(body),
     });
 
-    return handleResponse<ClearHistoryResponse>(response, "Failed to clear history");
+    return handleVoidResponse(response, "Failed to clear history");
 }
 
 export async function setDemoBalance(body: DemoBalanceRequest): Promise<DemoBalanceResponse> {
@@ -75,5 +78,5 @@ export async function setDemoBalance(body: DemoBalanceRequest): Promise<DemoBala
         body: JSON.stringify(body),
     });
 
-    return handleResponse<DemoBalanceResponse>(response, "Failed to set demo balance");
+    return handleJsonResponse<DemoBalanceResponse>(response, "Failed to set demo balance");
 }

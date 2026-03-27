@@ -7,31 +7,9 @@ export interface StatisticsSummaryDTO {
 export interface SettingsOverviewResponse {
     lastAction: string;
     activeDemoBalance: number;
-    statistics: StatisticsSummaryDTO;
+    statistics?: StatisticsSummaryDTO;
     recentHistoryEntryCount: number;
     availableConfigurationValueCount: number;
-}
-
-export interface StatisticsResetResponse {
-    message: string;
-    statistics: StatisticsSummaryDTO;
-}
-
-export interface ClearHistoryRequest {
-    entriesToClear: number;
-}
-
-export interface SpinHistoryEntryDTO {
-    spinId: number;
-    resultLabel: string;
-    creditDelta: number;
-}
-
-export interface ClearHistoryResponse {
-    message: string;
-    clearedEntries: number;
-    remainingEntries: number;
-    removedEntries: SpinHistoryEntryDTO[];
 }
 
 export interface DemoBalanceRequest {

@@ -1,0 +1,38 @@
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(110px, 1fr));
+    gap: 0.9rem;
+    max-width: 760px;
+}
+
+.slot-cell {
+    min-height: 92px;
+    border: 2px solid #cfd6de;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f4f7;
+    color: #243447;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition:
+            transform 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease,
+            color 0.15s ease;
+}
+
+.slot-cell:hover {
+    transform: translateY(-1px);
+}
+
+.slot-cell--winning {
+    border-color: #f0b90b;
+    background: #fff4cc;
+    color: #3a2a00;
+    box-shadow: 0 0 0 2px rgba(240, 185, 11, 0.18), 0 6px 16px rgba(0, 0, 0, 0.16);
+}
