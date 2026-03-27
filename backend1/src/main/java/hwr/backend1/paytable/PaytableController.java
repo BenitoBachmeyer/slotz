@@ -19,7 +19,7 @@ public class PaytableController {
     }
 
     @GetMapping("/paytable")
-    public ResponseEntity<?> retrievePaytableStats() {
+    public ResponseEntity<List<PaytableResponse>> retrievePaytableStats() {
         List<PaytableResponse> list = paytableService.retrievePaytableList();
 
         return ResponseEntity.ok(list);
