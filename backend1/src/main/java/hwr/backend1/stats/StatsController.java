@@ -17,6 +17,6 @@ public class StatsController {
 
     @GetMapping("/stats")
     public ResponseEntity<StatsDTO> retrieveStats() {
-        return ResponseEntity.ok(statsService.retrieveStats());
+        return ResponseEntity.ok(statsService.getStats());
     }
 }
