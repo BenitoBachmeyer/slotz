@@ -1,80 +1,98 @@
-import {PageHeader} from "../components/PageHeader/PageHeader.tsx";
-import {StatMetricCard} from "../components/StatMetricCard/StatMetricCard.tsx";
-import {StatBreakdownCard} from "../components/StatBreakdownCard/StatBreakdownCard.tsx";
+import { useEffect, useState } from "react";
+import { PageHeader } from "../components/PageHeader/PageHeader.tsx";
+import { StatMetricCard } from "../components/StatMetricCard/StatMetricCard.tsx";
+import { StatBreakdownCard } from "../components/StatBreakdownCard/StatBreakdownCard.tsx";
+import { fetchStats } from "../api/statsApi.ts";
+import type { StatsResponse } from "../../types/stats";
 import "./StatsPage.css";
 
-const overviewMetrics = [
-    {
-        label: "Total Spins",
-        value: "2,480",
-        hint: "+184 this week",
-    },
-    {
-        label: "Win Rate",
-        value: "31.8%",
-        hint: "788 winning spins",
-    },
-    {
-        label: "Best Payout",
-        value: "50x",
-        hint: "Bell x5 combo",
-    },
-    {
-        label: "Average Return",
-        value: "92.4%",
-        hint: "Across last 500 spins",
-    },
-];
+function formatSignedCredits(value: number): string {
+    return `${value >= 0 ? "+" : ""}${value} credits`;
+}
 
-const performanceByDay = [
-    {label: "Monday", value: "+240 credits"},
-    {label: "Tuesday", value: "-120 credits"},
-    {label: "Wednesday", value: "+380 credits"},
-    {label: "Thursday", value: "+95 credits"},
-    {label: "Friday", value: "+510 credits"},
-];
-
-const symbolFrequency = [
-    {label: "Cherries", value: "19.2%"},
-    {label: "Watermelon", value: "17.5%"},
-    {label: "Strawberry", value: "16.0%"},
-    {label: "Grapes", value: "14.6%"},
-    {label: "Banana", value: "12.8%"},
-    {label: "Lemon", value: "11.1%"},
-    {label: "Bell", value: "8.8%"},
-];
+function formatPercentage(value: number): string {
+    return `${value.toFixed(1)}%`;
+}
 
 export const StatsPage = () => {
+    const [stats, setStats] = useState<StatsResponse | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchStats()
+            .then((data) => {
+                setStats(data);
+            })
+            .catch((err) => {
+                console.error("Stats fetch failed:", err);
+                setError(`Could not load stats: ${String(err)}`);
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
+    const weeklyTrendItems = stats
+        ? Object.entries(stats.weeklyTrend).map(([label, value]) => ({
+            label,
+            value: formatSignedCredits(value),
+        }))
+        : [];
+
+    const symbolFrequencyItems = stats
+        ? Object.entries(stats.symbolFrequency).map(([label, value]) => ({
+            label,
+            value: formatPercentage(value),
+        }))
+        : [];
+
     return (
         <section>
             <PageHeader
                 title={"Stats"}
-                subtitle={"Track your slot performance, streaks and payout trends with mock sample data."}
+                subtitle={"Track your slot performance, streaks and payout trends with live backend data."}
             />
 
-            <div className="stats-metric-grid">
-                {overviewMetrics.map((metric) => (
-                    <StatMetricCard
-                        key={metric.label}
-                        label={metric.label}
-                        value={metric.value}
-                        hint={metric.hint}
-                    />
-                ))}
-            </div>
+            {loading && <p>Loading stats...</p>}
+            {error && <p>{error}</p>}
 
-            <div className="stats-breakdown-grid">
-                <StatBreakdownCard
-                    title={"Weekly Profit Trend"}
-                    description={"A snapshot of your latest five sessions. Helpful for spotting your hottest days."}
-                    items={performanceByDay}
-                />
-                <StatBreakdownCard
-                    title={"Symbol Frequency"}
-                    description={"How often each symbol appeared in your recent spin history."}
-                    items={symbolFrequency}
-                />
-            </div>
+            {!loading && !error && stats && (
+                <>
+                    <div className="stats-metric-grid">
+                        <StatMetricCard
+                            label="Total Spins"
+                            value={stats.totalSpins.toLocaleString()}
+                            hint={`+${stats.differenceInSpins} this week`}
+                        />
+                        <StatMetricCard
+                            label="Win Rate"
+                            value={formatPercentage(stats.winRate)}
+                            hint={`${stats.winningSpins} winning spins`}
+                        />
+                        <StatMetricCard
+                            label="Best Payout"
+                            value={`${stats.highestPayout}x`}
+                            hint={stats.highestPayoutString}
+                        />
+                        <StatMetricCard
+                            label="Average Return"
+                            value={formatPercentage(stats.avgReturn)}
+                        />
+                    </div>
+
+                    <div className="stats-breakdown-grid">
+                        <StatBreakdownCard
+                            title={"Weekly Profit Trend"}
+                            description={"A snapshot of your latest five sessions. Helpful for spotting your hottest days."}
+                            items={weeklyTrendItems}
+                        />
+                        <StatBreakdownCard
+                            title={"Symbol Frequency"}
+                            description={"How often each symbol appeared in your recent spin history."}
+                            items={symbolFrequencyItems}
+                        />
+                    </div>
+                </>
+            )}
         </section>
     );
 };

@@ -3,7 +3,7 @@ import Layout from "./Layout.tsx";
 import {HomePage} from "./pages/HomePage.tsx";
 import {SlotPage} from "./pages/SlotPage.tsx";
 import {SymbolsPage} from "./pages/SymbolsPage.tsx";
-import {PaytablePage} from "./pages/PaytablePage.tsx";
+import PaytablePage from "./pages/PaytablePage.tsx";
 import {HistoryPage} from "./pages/HistoryPage.tsx";
 import {StatsPage} from "./pages/StatsPage.tsx";
 import {ChallengePage} from "./pages/ChallengePage.tsx";

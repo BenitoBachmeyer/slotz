@@ -5,7 +5,7 @@ type PaytableItemProps = {
     imageSrc: string,
     payouts: {
         matchCount: number,
-        multiplier: number,
+        payout: number,
     }[];
 };
 
@@ -24,7 +24,7 @@ export const PaytableItem = ({imageAlt, imageSrc, payouts}: PaytableItemProps) =
                 {payouts.map((payout) => (
                     <div className={"paytable-row"} key={payout.matchCount}>
                         <span>{payout.matchCount} similar</span>
-                        <span>{payout.multiplier}x</span>
+                        <span>{payout.payout}x</span>
                     </div>
                 ))}
             </div>
