@@ -5,11 +5,11 @@ import hwr.backend1.settings.dto.*;
 public interface SettingsService {
     SettingsOverviewDTO getOverview();
 
-    StatisticsResetResponseDTO resetStatistics();
+    SettingsConfigurationDTO getConfiguration();
 
-    ClearHistoryResponseDTO clearHistory(ClearHistoryRequestDTO requestDto);
+    void resetStatistics();
 
-    DemoBalanceResponseDTO setDemoBalance(DemoBalanceRequestDTO requestDto);
+    void clearHistory();
 
-    SlotConfigurationDTO getConfiguration();
+    DemoBalanceResponseDTO setDemoBalance(DemoBalanceRequestDTO request);
 }

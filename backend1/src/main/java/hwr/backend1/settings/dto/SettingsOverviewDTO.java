@@ -1,9 +1,10 @@
 package hwr.backend1.settings.dto;
 
 public record SettingsOverviewDTO(
-        String lastAction,
-        long activeDemoBalance,
-        StatisticsSummaryDTO statistics,
-        int recentHistoryEntryCount,
-        int availableConfigurationValueCount
+        int currentDemoBalance,
+        int totalSpins,
+        int historySize,
+        int minBet,
+        int maxBet,
+        int defaultBet
 ) {}
