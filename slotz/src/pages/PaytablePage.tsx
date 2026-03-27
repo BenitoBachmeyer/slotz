@@ -23,11 +23,9 @@ export default function PaytablePage() {
     useEffect(() => {
         fetchPaytable()
             .then((data) => {
-                console.log("Paytable data: ", data);
                 setPaytable(data);
             })
             .catch((err) => {
-                console.error("Paytable fetch failed: ", err);
                 setError(`Could not load Paytable: ${String(err)}`);
             })
             .finally(() => setLoading(false))
