@@ -86,8 +86,8 @@ public class HardcodedSettingsServiceImpl implements SettingsService{
     public SlotConfigurationDTO getConfiguration() {
         return new SlotConfigurationDTO(
                 5,
-                3,
-                10,
+                4,
+                6,
                 1,
                 100,
                 20,
