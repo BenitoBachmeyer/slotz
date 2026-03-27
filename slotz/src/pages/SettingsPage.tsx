@@ -1,22 +1,21 @@
-import {useMemo, useState} from "react";
-import {PageHeader} from "../components/PageHeader/PageHeader.tsx";
-import {SettingsActionCard} from "../components/SettingsActionCard/SettingsActionCard.tsx";
-import {SettingsConfigCard} from "../components/SettingsConfigCard/SettingsConfigCard.tsx";
-import {SettingsOverviewCard} from "../components/SettingsOverviewCard/SettingsOverviewCard.tsx";
+import { useEffect, useMemo, useState } from "react";
+import { PageHeader } from "../components/PageHeader/PageHeader.tsx";
+import { SettingsActionCard } from "../components/SettingsActionCard/SettingsActionCard.tsx";
+import { SettingsConfigCard } from "../components/SettingsConfigCard/SettingsConfigCard.tsx";
+import { SettingsOverviewCard } from "../components/SettingsOverviewCard/SettingsOverviewCard.tsx";
+import {
+    clearHistory,
+    fetchSettingsConfiguration,
+    fetchSettingsOverview,
+    resetStatistics,
+    setDemoBalance,
+} from "../api/settingsApi.ts";
+import type {
+    SettingsOverviewResponse,
+    SlotConfigurationResponse,
+    SpinHistoryEntryDTO,
+} from "../../types/settings";
 import "./SettingsPage.css";
-
-const initialStats = [
-    {label: "Total Spins", value: "2,480"},
-    {label: "Win Rate", value: "31.8%"},
-    {label: "Best Payout", value: "50x"},
-];
-
-const initialHistory = [
-    "Spin #2480 · Bell x5 · +500 credits",
-    "Spin #2479 · Cherries x4 · +160 credits",
-    "Spin #2478 · No win · -20 credits",
-    "Spin #2477 · Watermelon x3 · +60 credits",
-];
 
 const overviewItems = [
     {
@@ -27,7 +26,7 @@ const overviewItems = [
     {
         eyebrow: "Overview",
         title: "Clear History",
-        description: "Remove the visible spin history so you can start a fresh demo session without clutter.",
+        description: "Remove recent spin history entries from the current demo profile.",
     },
     {
         eyebrow: "Overview",
@@ -41,63 +40,145 @@ const overviewItems = [
     },
 ];
 
-const gameConfiguration = [
-    {label: "Reels", value: "5"},
-    {label: "Rows", value: "4"},
-    {label: "Active Paylines", value: "6"},
-    {label: "Default Demo Balance", value: "1,000 credits"},
-    {label: "Minimum Bet", value: "10 credits"},
-    {label: "Maximum Bet", value: "250 credits"},
-    {label: "Top Symbol Payout", value: "Bell · 50x on 5 matches"},
-];
-
 export const SettingsPage = () => {
-    const [stats, setStats] = useState(initialStats);
-    const [history, setHistory] = useState(initialHistory);
-    const [demoBalance, setDemoBalance] = useState("1000");
-    const [appliedBalance, setAppliedBalance] = useState("1000");
+    const [overview, setOverview] = useState<SettingsOverviewResponse | null>(null);
+    const [configuration, setConfiguration] = useState<SlotConfigurationResponse | null>(null);
+    const [removedEntries, setRemovedEntries] = useState<SpinHistoryEntryDTO[]>([]);
+    const [demoBalance, setDemoBalanceInput] = useState("1000");
     const [showConfiguration, setShowConfiguration] = useState(false);
-    const [lastAction, setLastAction] = useState("No changes applied yet.");
 
-    const statsStatus = useMemo(
-        () => stats.map((entry) => `${entry.label}: ${entry.value}`).join(" · "),
-        [stats],
-    );
+    const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const historyStatus = history.length > 0
-        ? `${history.length} recent entries available`
-        : "History is currently empty";
+    useEffect(() => {
+        Promise.all([fetchSettingsOverview(), fetchSettingsConfiguration()])
+            .then(([overviewData, configurationData]) => {
+                setOverview(overviewData);
+                setConfiguration(configurationData);
+                setDemoBalanceInput(String(overviewData.activeDemoBalance));
+            })
+            .catch((err) => {
+                console.error("Settings fetch failed:", err);
+                setError(`Could not load settings: ${String(err)}`);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-    const resetStatistics = () => {
-        setStats([
-            {label: "Total Spins", value: "0"},
-            {label: "Win Rate", value: "0.0%"},
-            {label: "Best Payout", value: "0x"},
-        ]);
-        setLastAction("Statistics were reset to demo defaults.");
+    const statsStatus = useMemo(() => {
+        if (!overview) return "";
+        return [
+            `Total Spins: ${overview.statistics.totalSpins}`,
+            `Win Rate: ${Number(overview.statistics.winRate).toFixed(1)}%`,
+            `Best Payout: ${overview.statistics.bestPayout}x`,
+        ].join(" · ");
+    }, [overview]);
+
+    const historyStatus = overview
+        ? `${overview.recentHistoryEntryCount} recent entries available`
+        : "";
+
+    const reloadOverview = async () => {
+        const freshOverview = await fetchSettingsOverview();
+        setOverview(freshOverview);
+        setDemoBalanceInput(String(freshOverview.activeDemoBalance));
     };
 
-    const clearHistory = () => {
-        setHistory([]);
-        setLastAction("History entries were cleared.");
+    const handleResetStatistics = async () => {
+        try {
+            setActionLoading(true);
+            setError(null);
+
+            const response = await resetStatistics(); await reloadOverview();
+            setOverview((prev) =>
+                prev
+                    ? {
+                        ...prev,
+                        lastAction: response.message,
+                        statistics: response.statistics,
+                    }
+                    : prev,
+            );
+        } catch (err) {
+            console.error(err);
+            setError(`Action failed: ${String(err)}`);
+        } finally {
+            setActionLoading(false);
+        }
     };
 
-    const applyDemoBalance = () => {
-        const normalizedBalance = Number.parseInt(demoBalance, 10);
-        const nextBalance = Number.isNaN(normalizedBalance) || normalizedBalance < 0
-            ? 0
-            : normalizedBalance;
+    const handleClearHistory = async () => {
+        try {
+            setActionLoading(true);
+            setError(null);
 
-        setAppliedBalance(nextBalance.toString());
-        setDemoBalance(nextBalance.toString());
-        setLastAction(`Demo balance updated to ${nextBalance} credits.`);
+            const availableEntries = overview?.recentHistoryEntryCount ?? 0;
+            if (availableEntries < 1) {
+                setError("There are no history entries to clear.");
+                return;
+            }
+            const response = await clearHistory({ entriesToClear: availableEntries });
+
+            setRemovedEntries(response.removedEntries);
+            setOverview((prev) =>
+                prev
+                    ? {
+                        ...prev,
+                        lastAction: response.message,
+                        recentHistoryEntryCount: response.remainingEntries,
+                    }
+                    : prev,
+            );
+        } catch (err) {
+            console.error(err);
+            setError(`Action failed: ${String(err)}`);
+        } finally {
+            setActionLoading(false);
+        }
     };
 
-    const toggleConfiguration = () => {
-        const nextShowConfiguration = !showConfiguration;
-        setShowConfiguration(nextShowConfiguration);
-        setLastAction(nextShowConfiguration ? "Game configuration revealed." : "Game configuration hidden.");
+    const handleApplyDemoBalance = async () => {
+        try {
+            setActionLoading(true);
+            setError(null);
+
+            const parsed = Number.parseInt(demoBalance, 10);
+            const normalized = Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
+
+            const response = await setDemoBalance({ demoCredits: normalized });
+
+            setOverview((prev) =>
+                prev
+                    ? {
+                        ...prev,
+                        lastAction: response.message,
+                        activeDemoBalance: response.activeDemoBalance,
+                    }
+                    : prev,
+            );
+
+            setDemoBalanceInput(String(response.activeDemoBalance));
+        } catch (err) {
+            console.error(err);
+            setError(`Action failed: ${String(err)}`);
+        } finally {
+            setActionLoading(false);
+        }
     };
+
+    const configurationItems = configuration
+        ? [
+            { label: "Reels", value: String(configuration.reelCount) },
+            { label: "Rows", value: String(configuration.rowCount) },
+            { label: "Active Paylines", value: String(configuration.paylineCount) },
+            { label: "Minimum Bet", value: `${configuration.minBet} credits` },
+            { label: "Maximum Bet", value: `${configuration.maxBet} credits` },
+            {
+                label: "Top Symbol Payout",
+                value: `${configuration.payoutHighlightLabel} · ${configuration.payoutHighlightMultiplier}x`,
+            },
+        ]
+        : [];
 
     return (
         <section>
@@ -117,73 +198,91 @@ export const SettingsPage = () => {
                 ))}
             </div>
 
-            <div className="settings-page__toolbar">
-                <p className="settings-page__last-action">Last action: {lastAction}</p>
-                <div className="settings-page__balance-chip">Active demo balance: {appliedBalance} credits</div>
-            </div>
+            {loading && <p>Loading settings...</p>}
+            {error && <p>{error}</p>}
 
-            <div className="settings-page__grid">
-                <SettingsActionCard
-                    title={"Reset Statistics"}
-                    description={"Restore your slot metrics to a clean demo baseline before starting a new session."}
-                    actionLabel={"Reset stats"}
-                    onAction={resetStatistics}
-                    status={statsStatus}
-                />
+            {!loading && !error && overview && (
+                <>
+                    <div className="settings-page__toolbar">
+                        <p className="settings-page__last-action">
+                            Last action: {overview.lastAction}
+                        </p>
+                        <div className="settings-page__balance-chip">
+                            Active demo balance: {overview.activeDemoBalance} credits
+                        </div>
+                    </div>
 
-                <SettingsActionCard
-                    title={"Clear History"}
-                    description={"Remove the latest spin history entries from the current demo profile."}
-                    actionLabel={"Clear history"}
-                    variant={"secondary"}
-                    onAction={clearHistory}
-                    status={historyStatus}
-                >
-                    <ul className="settings-page__history-list">
-                        {history.length > 0 ? history.map((entry) => (
-                            <li key={entry}>{entry}</li>
-                        )) : <li>No recorded spins in history.</li>}
-                    </ul>
-                </SettingsActionCard>
-
-                <SettingsActionCard
-                    title={"Set Demo Balance"}
-                    description={"Choose the balance that should be loaded for the next demo play session."}
-                    actionLabel={"Apply balance"}
-                    onAction={applyDemoBalance}
-                    status={`Prepared balance: ${demoBalance || "0"} credits`}
-                >
-                    <label className="settings-page__field" htmlFor="demo-balance">
-                        <span>Demo credits</span>
-                        <input
-                            id="demo-balance"
-                            min="0"
-                            onChange={(event) => setDemoBalance(event.target.value)}
-                            step="10"
-                            type="number"
-                            value={demoBalance}
+                    <div className="settings-page__grid">
+                        <SettingsActionCard
+                            title={"Reset Statistics"}
+                            description={"Restore your slot metrics to a clean demo baseline before starting a new session."}
+                            actionLabel={actionLoading ? "Working..." : "Reset stats"}
+                            onAction={handleResetStatistics}
+                            status={statsStatus}
                         />
-                    </label>
-                </SettingsActionCard>
 
-                <SettingsActionCard
-                    title={"Show Game Configuration"}
-                    description={"Review the most important gameplay values currently used by the slot demo."}
-                    actionLabel={showConfiguration ? "Hide configuration" : "Show configuration"}
-                    variant={showConfiguration ? "secondary" : "primary"}
-                    onAction={toggleConfiguration}
-                    status={`${gameConfiguration.length} configuration values available`}
-                />
-            </div>
+                        <SettingsActionCard
+                            title={"Clear History"}
+                            description={"Remove recent history entries from the current demo profile."}
+                            actionLabel={actionLoading ? "Working..." : "Clear history"}
+                            variant={"secondary"}
+                            onAction={handleClearHistory}
+                            status={historyStatus}
+                        >
+                            <ul className="settings-page__history-list">
+                                {removedEntries.length > 0 ? (
+                                    removedEntries.map((entry) => (
+                                        <li key={entry.spinId}>
+                                            Spin #{entry.spinId} · {entry.resultLabel} · {entry.creditDelta >= 0 ? "+" : ""}
+                                            {entry.creditDelta} credits
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li>No cleared entries yet.</li>
+                                )}
+                            </ul>
+                        </SettingsActionCard>
 
-            {showConfiguration && (
-                <div className="settings-page__config-panel">
-                    <SettingsConfigCard
-                        title={"Game Configuration"}
-                        description={"These values summarize the current slot setup exposed in the demo interface."}
-                        items={gameConfiguration}
-                    />
-                </div>
+                        <SettingsActionCard
+                            title={"Set Demo Balance"}
+                            description={"Choose the balance that should be loaded for the next demo play session."}
+                            actionLabel={actionLoading ? "Working..." : "Apply balance"}
+                            onAction={handleApplyDemoBalance}
+                            status={`Prepared balance: ${demoBalance || "0"} credits`}
+                        >
+                            <label className="settings-page__field" htmlFor="demo-balance">
+                                <span>Demo credits</span>
+                                <input
+                                    id="demo-balance"
+                                    min="0"
+                                    onChange={(event) => setDemoBalanceInput(event.target.value)}
+                                    step="10"
+                                    type="number"
+                                    value={demoBalance}
+                                />
+                            </label>
+                        </SettingsActionCard>
+
+                        <SettingsActionCard
+                            title={"Show Game Configuration"}
+                            description={"Review the most important gameplay values currently used by the slot demo."}
+                            actionLabel={showConfiguration ? "Hide configuration" : "Show configuration"}
+                            variant={showConfiguration ? "secondary" : "primary"}
+                            onAction={() => setShowConfiguration((prev) => !prev)}
+                            status={`${overview.availableConfigurationValueCount} configuration values available`}
+                        />
+                    </div>
+
+                    {showConfiguration && configuration && (
+                        <div className="settings-page__config-panel">
+                            <SettingsConfigCard
+                                title={"Game Configuration"}
+                                description={"These values summarize the current slot setup exposed in the backend."}
+                                items={configurationItems}
+                            />
+                        </div>
+                    )}
+                </>
             )}
         </section>
     );
