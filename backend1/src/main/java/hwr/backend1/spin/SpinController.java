@@ -1,5 +1,7 @@
 package hwr.backend1.spin;
 
+import hwr.backend1.balance.BalanceService;
+import hwr.backend1.spin.dto.BalanceResponseDTO;
 import hwr.backend1.spin.dto.SpinRequestDTO;
 import hwr.backend1.spin.dto.SpinResponseDTO;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +13,11 @@ import java.util.List;
 @RequestMapping("/api/spins")
 public class SpinController {
     private final SpinService spinService;
+    private final BalanceService balanceService;
 
-    public SpinController(SpinService spinService) {
+    public SpinController(SpinService spinService, BalanceService balanceService) {
         this.spinService = spinService;
+        this.balanceService = balanceService;
     }
 
     @PostMapping
@@ -24,5 +28,10 @@ public class SpinController {
     @GetMapping("/history")
     public ResponseEntity<List<SpinResponseDTO>> getSpinHistory() {
         return ResponseEntity.ok(spinService.getSpinHistory());
+    }
+
+    @GetMapping("/balance")
+    public ResponseEntity<BalanceResponseDTO> getCurBalance() {
+        return ResponseEntity.ok(new BalanceResponseDTO(balanceService.getCurrentBalance()));
     }
 }

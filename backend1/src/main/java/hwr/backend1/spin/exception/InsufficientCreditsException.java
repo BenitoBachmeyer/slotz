@@ -1,0 +1,7 @@
+package hwr.backend1.spin.exception;
+
+public class InsufficientCreditsException extends RuntimeException {
+    public InsufficientCreditsException(String message) {
+        super(message);
+    }
+}

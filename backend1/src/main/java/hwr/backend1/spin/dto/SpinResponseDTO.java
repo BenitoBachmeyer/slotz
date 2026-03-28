@@ -8,5 +8,6 @@ public record SpinResponseDTO(
         int totalWin,
         List<List<String>> matrix,
         List<WinningLineDTO> winningLines,
-        String timestamp
+        String timestamp,
+        int currentBalance
 ) {}
