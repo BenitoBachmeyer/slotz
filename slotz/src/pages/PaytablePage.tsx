@@ -1,19 +1,13 @@
-import {PageHeader} from "../components/PageHeader/PageHeader.tsx";
-import {Card} from "../components/Card/Card.tsx";
-import grapesIcon from "../assets/grapes.svg"
-import bananaIcon from "../assets/banana.svg"
-import lemonIcon from "../assets/lemon.svg"
-import strawberryIcon from "../assets/strawberry.svg"
-import watermelonIcon from "../assets/watermelon.svg"
-import cherriesIcon from "../assets/cherries.svg"
-import bellIcon from "../assets/bell.svg"
-import "./PaytablePage.css"
-import {PaytableItem} from "../components/PaytableItem/PaytableItem.tsx";
-import {WinningLinesInfo} from "../components/WinningLinesInfo/WinningLinesInfo.tsx";
-import {WinningRulesInfo} from "../components/WinningRulesInfo/WinningRulesInfo.tsx";
-import {useEffect, useState} from "react";
-import type {PaytableResponse, SymbolKey} from "../../types/paytable.ts";
-import {fetchPaytable} from "../api/paytableApi.ts";
+import { PageHeader } from "../components/PageHeader/PageHeader.tsx";
+import { Card } from "../components/Card/Card.tsx";
+import "./PaytablePage.css";
+import { PaytableItem } from "../components/PaytableItem/PaytableItem.tsx";
+import { WinningLinesInfo } from "../components/WinningLinesInfo/WinningLinesInfo.tsx";
+import { WinningRulesInfo } from "../components/WinningRulesInfo/WinningRulesInfo.tsx";
+import { useEffect, useState } from "react";
+import type { PaytableResponse } from "../../types/paytable.ts";
+import { fetchPaytable } from "../api/paytableApi.ts";
+import { getSymbolAsset } from "../constants/symbolAssets.ts";
 
 export default function PaytablePage() {
     const [paytable, setPaytable] = useState<PaytableResponse[]>([]);
@@ -28,18 +22,8 @@ export default function PaytablePage() {
             .catch((err) => {
                 setError(`Could not load Paytable: ${String(err)}`);
             })
-            .finally(() => setLoading(false))
+            .finally(() => setLoading(false));
     }, []);
-
-    const symbolImages: Record<SymbolKey, string> = {
-        lemon: lemonIcon,
-        banana: bananaIcon,
-        grape: grapesIcon,
-        strawberry: strawberryIcon,
-        watermelon: watermelonIcon,
-        cherry: cherriesIcon,
-        bell: bellIcon,
-    };
 
     return (
         <>
@@ -59,7 +43,7 @@ export default function PaytablePage() {
                         <Card className={"paytable-card"} key={symbol.id}>
                             <PaytableItem
                                 imageAlt={`${symbol.name} icon`}
-                                imageSrc={symbolImages[symbol.imageKey]}
+                                imageSrc={getSymbolAsset(symbol.imageKey.toUpperCase()) ?? ""}
                                 payouts={symbol.payouts}
                             />
                         </Card>
@@ -67,8 +51,8 @@ export default function PaytablePage() {
                 </div>
             )}
 
-            <WinningRulesInfo/>
-            <WinningLinesInfo/>
+            <WinningRulesInfo />
+            <WinningLinesInfo />
         </>
-    )
+    );
 }

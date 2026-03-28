@@ -31,6 +31,31 @@
     flex-wrap: wrap;
 }
 
+.slot-page__credits-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 140px;
+    padding: 0.8rem 1rem;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #1f2e40 0%, #16212f 100%);
+    border: 1px solid rgba(120, 170, 255, 0.18);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.slot-page__credits-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9fb4c9;
+}
+
+.slot-page__credits-value {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #f5f7fb;
+}
+
 .slot-page__main {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
@@ -61,6 +86,14 @@
 .slot-page__sidebar {
     display: flex;
     flex-direction: column;
+}
+
+.slot-page__warning {
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 208, 115, 0.35);
+    background: rgba(120, 86, 24, 0.22);
+    color: #ffe3a8;
+    border-radius: 12px;
 }
 
 .slot-page__error {

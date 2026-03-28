@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createSpin } from "../api/spinApi";
+import { createSpin, fetchCurrentBalance } from "../api/spinApi";
 import { fetchSlotConfig } from "../api/slotConfigApi";
 import BetControl from "../components/BetControl/BetControl";
 import SlotGrid from "../components/SlotGrid/SlotGrid";
@@ -10,10 +10,7 @@ import type { CellPosition, SpinResponse } from "../../types/spin";
 import "./SlotPage.css";
 
 function collectWinningPositions(spinResult: SpinResponse | null): CellPosition[] {
-    if (!spinResult) {
-        return [];
-    }
-
+    if (!spinResult) return [];
     return spinResult.winningLines.flatMap((line) => line.positions);
 }
 
@@ -25,38 +22,80 @@ function createInitialMatrix(rows: number, reels: number): string[][] {
 
 export default function SlotPage() {
     const [config, setConfig] = useState<SlotConfig | null>(null);
-    const [spinResult, setSpinResult] = useState<SpinResponse | null>(null);
-    const [betAmount, setBetAmount] = useState<number>(1);
+
+    const [spinResult, setSpinResult] = useState<SpinResponse | null>(() => {
+        const saved = sessionStorage.getItem("slot.spinResult");
+        return saved ? JSON.parse(saved) : null;
+    });
+
+    const [betAmount, setBetAmount] = useState<number>(() => {
+        const saved = sessionStorage.getItem("slot.betAmount");
+        return saved ? JSON.parse(saved) : 1;
+    });
+
+    const [currentBalance, setCurrentBalance] = useState<number>(() => {
+        const saved = sessionStorage.getItem("slot.currentBalance");
+        return saved ? JSON.parse(saved) : 1000;
+    });
+
     const [loadingConfig, setLoadingConfig] = useState(true);
     const [spinning, setSpinning] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        async function loadConfig() {
+        async function loadSlotPageData() {
             try {
                 setLoadingConfig(true);
                 setError(null);
 
-                const slotConfig = await fetchSlotConfig();
+                const [slotConfig, backendBalance] = await Promise.all([
+                    fetchSlotConfig(),
+                    fetchCurrentBalance(),
+                ]);
+
                 setConfig(slotConfig);
-                setBetAmount(slotConfig.defaultBet);
+                setCurrentBalance(backendBalance);
+
+                const savedBet = sessionStorage.getItem("slot.betAmount");
+                if (!savedBet) {
+                    setBetAmount(slotConfig.defaultBet);
+                }
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Failed to load config");
+                setError(err instanceof Error ? err.message : "Failed to load slot page data");
             } finally {
                 setLoadingConfig(false);
             }
         }
 
-        void loadConfig();
+        void loadSlotPageData();
     }, []);
+
+    useEffect(() => {
+        sessionStorage.setItem("slot.betAmount", JSON.stringify(betAmount));
+    }, [betAmount]);
+
+    useEffect(() => {
+        if (spinResult) {
+            sessionStorage.setItem("slot.spinResult", JSON.stringify(spinResult));
+        } else {
+            sessionStorage.removeItem("slot.spinResult");
+        }
+    }, [spinResult]);
+
+    useEffect(() => {
+        sessionStorage.setItem("slot.currentBalance", JSON.stringify(currentBalance));
+    }, [currentBalance]);
 
     const winningPositions = useMemo(
         () => collectWinningPositions(spinResult),
         [spinResult],
     );
 
-    const displayedMatrix = spinResult?.matrix
-        ?? createInitialMatrix(config?.rows ?? 4, config?.reels ?? 5);
+    const displayedMatrix =
+        spinResult?.matrix ??
+        createInitialMatrix(config?.rows ?? 4, config?.reels ?? 5);
+
+    const hasInsufficientCredits = currentBalance < betAmount;
 
     const handleSpin = async () => {
         try {
@@ -65,6 +104,7 @@ export default function SlotPage() {
 
             const result = await createSpin(betAmount);
             setSpinResult(result);
+            setCurrentBalance(result.currentBalance);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Spin failed");
         } finally {
@@ -91,6 +131,11 @@ export default function SlotPage() {
                 </div>
 
                 <div className="slot-page__controls">
+                    <div className="slot-page__credits-card">
+                        <span className="slot-page__credits-label">Current Credits</span>
+                        <strong className="slot-page__credits-value">{currentBalance}</strong>
+                    </div>
+
                     <BetControl
                         value={betAmount}
                         min={config.minBet}
@@ -101,11 +146,17 @@ export default function SlotPage() {
 
                     <SpinButton
                         loading={spinning}
-                        disabled={spinning}
+                        disabled={spinning || hasInsufficientCredits}
                         onClick={handleSpin}
                     />
                 </div>
             </div>
+
+            {hasInsufficientCredits && !error && (
+                <div className="slot-page__warning">
+                    Not enough credits for this bet. Reduce the bet amount or set a new demo balance.
+                </div>
+            )}
 
             {error && <div className="slot-page__error">{error}</div>}
 
@@ -117,6 +168,9 @@ export default function SlotPage() {
                     />
 
                     <div className="slot-page__result">
+                        <div>
+                            <strong>Current Credits:</strong> {currentBalance}
+                        </div>
                         <div>
                             <strong>Bet:</strong> {spinResult?.betAmount ?? betAmount}
                         </div>

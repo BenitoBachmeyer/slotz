@@ -18,3 +18,19 @@ export async function createSpin(betAmount: number): Promise<SpinResponse> {
 
     return response.json();
 }
+
+export async function fetchCurrentBalance(): Promise<number> {
+    const response = await fetch(`${API_BASE_URL}/spins/balance`, {
+        headers: {
+            Accept: "application/json",
+        },
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to fetch current balance");
+    }
+    const data: { currentBalance: number } = await response.json();
+    return data.currentBalance;
+}

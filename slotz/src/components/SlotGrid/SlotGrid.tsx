@@ -1,4 +1,5 @@
 import type { CellPosition, SpinResponse } from "../../../types/spin";
+import { getSymbolAsset } from "../../constants/symbolAssets";
 import "./SlotGrid.css";
 
 interface SlotGridProps {
@@ -22,13 +23,22 @@ export default function SlotGrid({ matrix, winningPositions }: SlotGridProps) {
             {matrix.map((row, rowIndex) =>
                 row.map((symbol, reelIndex) => {
                     const winning = isWinningCell(rowIndex, reelIndex, winningPositions);
+                    const symbolAsset = getSymbolAsset(symbol);
 
                     return (
                         <div
                             key={`${rowIndex}-${reelIndex}`}
                             className={`slot-cell ${winning ? "slot-cell--winning" : ""}`}
                         >
-                            {symbol}
+                            {symbolAsset ? (
+                                <img
+                                    src={symbolAsset}
+                                    alt={symbol}
+                                    className="slot-cell__image"
+                                />
+                            ) : (
+                                <span className="slot-cell__fallback">{symbol}</span>
+                            )}
                         </div>
                     );
                 }),

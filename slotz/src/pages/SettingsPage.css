@@ -1,45 +1,87 @@
+.settings-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
 .settings-page__overview-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .settings-page__toolbar {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: stretch;
     gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.settings-page__last-action {
-    margin: 0;
-    color: var(--color-accent-warm);
+    margin-bottom: 1rem;
 }
 
 .settings-page__balance-chip {
-    padding: 0.75rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.15rem;
     border: 1px solid #45617b;
     border-radius: 999px;
     background: rgba(18, 148, 144, 0.15);
     color: var(--color-text);
+    font-weight: 600;
+}
+
+.settings-page__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.settings-page__summary-item {
+    min-width: 120px;
+    padding: 0.85rem 1rem;
+    border: 1px solid #4e667c;
+    border-radius: 14px;
+    background: rgba(24, 38, 52, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.settings-page__summary-item span {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--color-text, #aac0d2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.settings-page__summary-item strong {
+    color: var(--color-text);
+    font-size: 1.1rem;
+}
+
+.settings-page__message {
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+
+.settings-page__message--error {
+    border-color: rgba(255, 120, 120, 0.35);
+    background: rgba(120, 24, 24, 0.25);
+    color: #ffd4d4;
+}
+
+.settings-page__message--success {
+    border-color: rgba(89, 211, 146, 0.35);
+    background: rgba(18, 92, 58, 0.22);
+    color: #d8ffe8;
 }
 
 .settings-page__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
-}
-
-.settings-page__history-list {
-    margin: 0;
-    padding-left: 1rem;
-    color: var(--color-text);
-}
-
-.settings-page__history-list li + li {
-    margin-top: 0.35rem;
 }
 
 .settings-page__field {
@@ -58,7 +100,7 @@
 }
 
 .settings-page__config-panel {
-    margin-top: 1rem;
+    margin-top: 0.25rem;
 }
 
 @media (max-width: 1100px) {
@@ -71,5 +113,17 @@
     .settings-page__grid,
     .settings-page__overview-grid {
         grid-template-columns: 1fr;
+    }
+
+    .settings-page__toolbar {
+        flex-direction: column;
+    }
+
+    .settings-page__summary {
+        width: 100%;
+    }
+
+    .settings-page__summary-item {
+        flex: 1 1 0;
     }
 }

@@ -13,10 +13,11 @@ export interface WinningLine {
 }
 
 export interface SpinResponse {
-    spinId: string,
+    spinId: string;
     betAmount: number;
     totalWin: number;
     matrix: string[][];
     winningLines: WinningLine[];
     timestamp: string;
+    currentBalance: number;
 }
