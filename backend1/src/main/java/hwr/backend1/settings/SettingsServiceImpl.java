@@ -1,5 +1,6 @@
 package hwr.backend1.settings;
 
+import hwr.backend1.balance.BalanceService;
 import hwr.backend1.game.GameConfigService;
 import hwr.backend1.history.SpinHistoryService;
 import hwr.backend1.settings.dto.DemoBalanceRequestDTO;
@@ -15,17 +16,18 @@ public class SettingsServiceImpl implements SettingsService {
     private final GameConfigService gameConfigService;
     private final StatsService statsService;
     private final SpinHistoryService spinHistoryService;
-
-    private int currentDemoBalance = 1000;
+    private final BalanceService balanceService;
 
     public SettingsServiceImpl(
             GameConfigService gameConfigService,
             StatsService statsService,
-            SpinHistoryService spinHistoryService
+            SpinHistoryService spinHistoryService,
+            BalanceService balanceService
     ) {
         this.gameConfigService = gameConfigService;
         this.statsService = statsService;
         this.spinHistoryService = spinHistoryService;
+        this.balanceService = balanceService;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class SettingsServiceImpl implements SettingsService {
         StatsDTO stats = statsService.getStats();
 
         return new SettingsOverviewDTO(
-                currentDemoBalance,
+                balanceService.getCurrentBalance(),
                 stats.totalSpins(),
                 spinHistoryService.getRecentSpins().size(),
                 gameConfigService.getMinBet(),
@@ -70,10 +72,10 @@ public class SettingsServiceImpl implements SettingsService {
             throw new IllegalArgumentException("Demo balance must not be negative");
         }
 
-        currentDemoBalance = request.balance();
+        balanceService.setCurrentBalance(request.balance());
 
         return new DemoBalanceResponseDTO(
-                currentDemoBalance,
+                balanceService.getCurrentBalance(),
                 "Demo balance updated successfully"
         );
     }

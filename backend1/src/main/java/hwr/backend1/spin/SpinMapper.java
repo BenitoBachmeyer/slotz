@@ -21,7 +21,20 @@ public class SpinMapper {
                 spinRecord.totalWin(),
                 mapMatrix(spinRecord.matrix()),
                 mapWinningLines(spinRecord.winningLines()),
-                spinRecord.timestamp().toString()
+                spinRecord.timestamp().toString(),
+                0
+        );
+    }
+
+    public static SpinResponseDTO toDto(SpinRecord spinRecord, int currentBalance) {
+        return new SpinResponseDTO(
+                spinRecord.spinId(),
+                spinRecord.betAmount(),
+                spinRecord.totalWin(),
+                mapMatrix(spinRecord.matrix()),
+                mapWinningLines(spinRecord.winningLines()),
+                spinRecord.timestamp().toString(),
+                currentBalance
         );
     }
 

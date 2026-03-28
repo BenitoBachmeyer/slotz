@@ -1,5 +1,6 @@
 package hwr.backend1.spin;
 
+import hwr.backend1.balance.BalanceService;
 import hwr.backend1.engine.ReelGeneratorService;
 import hwr.backend1.engine.WinCalculatorService;
 import hwr.backend1.game.GameConfigService;
@@ -9,6 +10,7 @@ import hwr.backend1.history.SpinHistoryService;
 import hwr.backend1.history.model.SpinRecord;
 import hwr.backend1.spin.dto.SpinRequestDTO;
 import hwr.backend1.spin.dto.SpinResponseDTO;
+import hwr.backend1.spin.exception.InsufficientCreditsException;
 import hwr.backend1.stats.StatsService;
 import org.springframework.stereotype.Service;
 
@@ -23,24 +25,33 @@ public class SpinServiceImpl implements SpinService {
     private final WinCalculatorService winCalculatorService;
     private final SpinHistoryService spinHistoryService;
     private final StatsService statsService;
+    private final BalanceService balanceService;
 
     public SpinServiceImpl(
             GameConfigService gameConfigService,
             ReelGeneratorService reelGeneratorService,
             WinCalculatorService winCalculatorService,
             SpinHistoryService spinHistoryService,
-            StatsService statsService
+            StatsService statsService,
+            BalanceService balanceService
     ) {
         this.gameConfigService = gameConfigService;
         this.reelGeneratorService = reelGeneratorService;
         this.winCalculatorService = winCalculatorService;
         this.spinHistoryService = spinHistoryService;
         this.statsService = statsService;
+        this.balanceService = balanceService;
     }
 
     @Override
     public SpinResponseDTO spin(SpinRequestDTO request) {
         validateBet(request.betAmount());
+
+        int reqBetAmount = request.betAmount();
+
+        if (!balanceService.hasEnoughCredits(reqBetAmount)) {
+            throw new InsufficientCreditsException("Too little credits");
+        }
 
         SlotSymbol[][] matrix = reelGeneratorService.generateMatrix();
         List<WinningLineResult> winningLines = winCalculatorService.calculateWins(matrix, request.betAmount());
@@ -48,6 +59,8 @@ public class SpinServiceImpl implements SpinService {
         int totalWin = winningLines.stream()
                 .mapToInt(WinningLineResult::winAmount)
                 .sum();
+
+        balanceService.applySpinResult(reqBetAmount, totalWin);
 
         SpinRecord spinRecord = new SpinRecord(
                 UUID.randomUUID().toString(),
@@ -61,7 +74,8 @@ public class SpinServiceImpl implements SpinService {
         spinHistoryService.addSpin(spinRecord);
         statsService.registerSpin(spinRecord);
 
-        return SpinMapper.toDto(spinRecord);
+        int curBalance = balanceService.getCurrentBalance();
+        return SpinMapper.toDto(spinRecord, curBalance);
     }
 
     private void validateBet(int betAmount) {
