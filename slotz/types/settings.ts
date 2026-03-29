@@ -17,9 +17,9 @@ export interface DemoBalanceResponse {
 }
 
 export interface SlotConfigurationResponse {
-    reelCount: number;
-    rowCount: number;
-    paylineCount: number;
+    reels: number;
+    rows: number;
+    paylines: number;
     minBet: number;
     maxBet: number;
     defaultBet: number;

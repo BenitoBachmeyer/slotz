@@ -148,9 +148,9 @@ export const SettingsPage = () => {
 
     const configurationItems = configuration
         ? [
-            { label: "Reels", value: String(configuration.reelCount) },
-            { label: "Rows", value: String(configuration.rowCount) },
-            { label: "Active Paylines", value: String(configuration.paylineCount) },
+            { label: "Reels", value: String(configuration.reels) },
+            { label: "Rows", value: String(configuration.rows) },
+            { label: "Active Paylines", value: String(configuration.paylines) },
             { label: "Minimum Bet", value: `${configuration.minBet} credits` },
             { label: "Maximum Bet", value: `${configuration.maxBet} credits` },
             { label: "Default Bet", value: `${configuration.defaultBet} credits` },
