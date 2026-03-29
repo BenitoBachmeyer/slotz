@@ -1,0 +1,26 @@
+.spin-button {
+    padding: 0.95rem 1.7rem;
+    border: none;
+    border-radius: 12px;
+    background: #2f6fed;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    min-width: 120px;
+    box-shadow: 0 8px 18px rgba(47, 111, 237, 0.28);
+    transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            opacity 0.15s ease;
+}
+
+.spin-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(47, 111, 237, 0.34);
+}
+
+.spin-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

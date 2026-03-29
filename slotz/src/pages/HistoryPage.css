@@ -1,0 +1,210 @@
+.history-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.history-page__error {
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 120, 120, 0.35);
+    background: rgba(120, 24, 24, 0.25);
+    color: #ffd4d4;
+    border-radius: 12px;
+}
+
+.history-matrix__cell--winning {
+    border: 2px solid #f4c542;
+    background: linear-gradient(180deg, #3a2f12 0%, #2b2210 100%);
+    box-shadow: 0 0 14px rgba(244, 197, 66, 0.35);
+    color: #fff3c4;
+}
+
+.history-matrix__image {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+}
+
+.history-matrix__fallback {
+    font-size: 0.8rem;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+.history-page__empty-card {
+    padding: 1.25rem;
+}
+
+.history-page__empty-title {
+    margin: 0 0 0.4rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.history-page__empty-text {
+    margin: 0;
+    color: #b9c8d6;
+}
+
+.history-page__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.history-entry {
+    padding: 1.25rem;
+}
+
+.history-entry__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.history-entry__title {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.35rem;
+}
+
+.history-entry__timestamp {
+    margin: 0;
+    color: #b0c0ce;
+    font-size: 0.95rem;
+}
+
+.history-entry__win-badge {
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-entry__win-badge--positive {
+    background: rgba(50, 150, 95, 0.22);
+    color: #bbf7d0;
+    border: 1px solid rgba(80, 190, 120, 0.35);
+}
+
+.history-entry__win-badge--neutral {
+    background: rgba(130, 148, 170, 0.14);
+    color: #d7e3ee;
+    border: 1px solid rgba(130, 148, 170, 0.28);
+}
+
+.history-entry__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+}
+
+.history-entry__stat {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    background: rgba(30, 45, 60, 0.55);
+    border: 1px solid rgba(92, 115, 136, 0.3);
+}
+
+.history-entry__stat span {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9bb0c2;
+}
+
+.history-entry__stat strong {
+    font-size: 1.05rem;
+    color: #f3f6fb;
+}
+
+.history-entry__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.history-entry__section-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e8f0f7;
+}
+
+.history-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.history-matrix__row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 72px));
+    gap: 0.45rem;
+}
+
+.history-matrix__cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 0.4rem;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #243247 0%, #1a2638 100%);
+    border: 1px solid rgba(90, 115, 138, 0.35);
+    color: #f6f8fb;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.history-entry__winning-lines {
+    margin: 0;
+    padding-left: 1rem;
+    color: #dbe6f0;
+}
+
+.history-entry__winning-lines li + li {
+    margin-top: 0.45rem;
+}
+
+.history-entry__no-win {
+    margin: 0;
+    color: #b8c7d5;
+}
+
+@media (max-width: 1100px) {
+    .history-entry__stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .history-entry__content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .history-entry__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .history-entry__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .history-matrix__row {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .history-matrix__cell {
+        min-height: 50px;
+        font-size: 0.85rem;
+    }
+}
