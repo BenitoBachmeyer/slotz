@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend1
+      dockerfile: Dockerfile
+    container_name: slotz-backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./slotz
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080/api
+    container_name: slotz-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
